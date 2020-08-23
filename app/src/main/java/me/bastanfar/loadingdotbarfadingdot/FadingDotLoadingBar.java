@@ -1,7 +1,5 @@
 package me.bastanfar.loadingdotbarfadingdot;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.ArgbEvaluator;
 import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
@@ -10,10 +8,12 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 class FadingDotLoadingBar extends View
 {
@@ -21,7 +21,6 @@ class FadingDotLoadingBar extends View
     {
         super(context);
         init();
-
     }
 
     public FadingDotLoadingBar(Context context, @Nullable AttributeSet attrs)
@@ -29,7 +28,6 @@ class FadingDotLoadingBar extends View
         super(context, attrs);
         setAttrs(context, attrs);
         init();
-
     }
 
     public FadingDotLoadingBar(Context context, @Nullable AttributeSet attrs, int defStyleAttr)
@@ -37,16 +35,14 @@ class FadingDotLoadingBar extends View
         super(context, attrs, defStyleAttr);
         setAttrs(context, attrs);
         init();
-
-
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public FadingDotLoadingBar(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes)
     {
         super(context, attrs, defStyleAttr, defStyleRes);
         setAttrs(context, attrs);
         init();
-
     }
 
     float dotOnePos = .1f;
@@ -100,147 +96,34 @@ class FadingDotLoadingBar extends View
     private void init()
     {
         PropertyValuesHolder dOne = PropertyValuesHolder.ofFloat("D1", .1f, .3f);
-//        PropertyValuesHolder dOneColor = PropertyValuesHolder.ofInt("D1C", 0x00FFFFFF, 0xFFFFFFFF);
+        PropertyValuesHolder dTwo = PropertyValuesHolder.ofFloat("D2", .3f, .5f);
+        PropertyValuesHolder dThree = PropertyValuesHolder.ofFloat("D3", .5f, .7f);
+        PropertyValuesHolder dFour = PropertyValuesHolder.ofFloat("D4", .7f, .9f);
+        PropertyValuesHolder dOneColor = PropertyValuesHolder.ofObject("D1C", new ArgbEvaluator(), 0x00FFFFFF, 0xFFFFFFFF);
+        PropertyValuesHolder dFourColor = PropertyValuesHolder.ofObject("D4C", new ArgbEvaluator(), 0xFFFFFFFF, 0x00FFFFFF);
 
-        ValueAnimator d1cAnimator = ValueAnimator.ofObject(new ArgbEvaluator(), 0x00FFFFFF, 0xFFFFFFFF);
-        d1cAnimator.setDuration(1000);
-        d1cAnimator.setRepeatMode(ValueAnimator.REVERSE);
-        d1cAnimator.setRepeatCount(ValueAnimator.INFINITE);
-        d1cAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
-        {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation)
-            {
-                dotOneColor = (int) animation.getAnimatedValue();
-            }
-        });
-        d1cAnimator.start();
 
         ValueAnimator animator = new ValueAnimator();
-        animator.setValues(dOne);
-        animator.setDuration(1000);
-        animator.setRepeatMode(ValueAnimator.REVERSE);
+        animator.setValues(dOne, dTwo, dThree, dFour, dOneColor, dFourColor);
+        animator.setDuration(800);
+        animator.setRepeatMode(ValueAnimator.RESTART);
         animator.setRepeatCount(ValueAnimator.INFINITE);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
         {
             @Override
             public void onAnimationUpdate(final ValueAnimator animation)
             {
-
                 dotOnePos = (float) animation.getAnimatedValue("D1");
-//                dotOneColor = (int) animation.getAnimatedValue("D1C");
+                dotTwoPos = (float) animation.getAnimatedValue("D2");
+                dotThreePos = (float) animation.getAnimatedValue("D3");
+                dotFourPos = (float) animation.getAnimatedValue("D4");
 
+                dotOneColor = (int) animation.getAnimatedValue("D1C");
+                dotFourColor = (int) animation.getAnimatedValue("D4C");
                 invalidate();
             }
         });
         animator.start();
-
-        // ---------------------------------------------------------------------------------------//
-        PropertyValuesHolder dTwo = PropertyValuesHolder.ofFloat("D2", .3f, .5f);
-
-        ValueAnimator animator2 = new ValueAnimator();
-        animator2.setValues(dTwo);
-        animator2.setDuration(900);
-        animator2.setRepeatMode(ValueAnimator.REVERSE);
-        animator2.setRepeatCount(ValueAnimator.INFINITE);
-        animator2.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
-        {
-            @Override
-            public void onAnimationUpdate(final ValueAnimator animation)
-            {
-
-                dotTwoPos = (float) animation.getAnimatedValue("D2");
-
-                invalidate();
-            }
-        });
-        animator2.start();
-
-        // ---------------------------------------------------------------------------------------//
-        PropertyValuesHolder dThree = PropertyValuesHolder.ofFloat("D3", .5f, .7f);
-
-        final ValueAnimator animator3 = new ValueAnimator();
-        animator3.setValues(dThree);
-        animator3.setDuration(800);
-        animator3.setRepeatMode(ValueAnimator.REVERSE);
-        animator3.setRepeatCount(ValueAnimator.INFINITE);
-        animator3.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
-        {
-            @Override
-            public void onAnimationUpdate(final ValueAnimator animation)
-            {
-
-                dotThreePos = (float) animation.getAnimatedValue("D3");
-
-                invalidate();
-            }
-        });
-        animator3.start();
-
-        ValueAnimator d2cAnimator = ValueAnimator.ofObject(new ArgbEvaluator(), 0xFFFFFFFF, 0x00FFFFFF);
-        d2cAnimator.setDuration(700);
-        d2cAnimator.setRepeatMode(ValueAnimator.REVERSE);
-        d2cAnimator.setRepeatCount(ValueAnimator.INFINITE);
-        d2cAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
-        {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation)
-            {
-                dotFourColor = (int) animation.getAnimatedValue();
-            }
-        });
-        d2cAnimator.start();
-
-        // ---------------------------------------------------------------------------------------//
-        PropertyValuesHolder dFour = PropertyValuesHolder.ofFloat("D4", .7f, .9f);
-
-        final ValueAnimator animator4 = new ValueAnimator();
-        animator4.setValues(dFour);
-        animator4.setDuration(700);
-        animator4.setRepeatMode(ValueAnimator.REVERSE);
-        animator4.setRepeatCount(ValueAnimator.INFINITE);
-        animator4.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
-        {
-            @Override
-            public void onAnimationUpdate(final ValueAnimator animation)
-            {
-
-                dotFourPos = (float) animation.getAnimatedValue("D4");
-
-                invalidate();
-            }
-        });
-
-//        restartAnim(animator);
-//        restartAnim(animator2);
-//        restartAnim(animator3);
-//        restartAnim(animator4);
-//        restartAnim(d1cAnimator);
-//        restartAnim(d2cAnimator);
-        animator4.start();
-
-    }
-
-    private void restartAnim(final ValueAnimator animator)
-    {
-        animator.addListener(new AnimatorListenerAdapter()
-        {
-            @Override
-            public void onAnimationEnd(Animator animation)
-            {
-                animator.start();
-                super.onAnimationEnd(animation);
-            }
-        });
-    }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
-    {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
-
-//        setMeasuredDimension(width, height);
     }
 
     private void setAttrs(Context context, @Nullable AttributeSet attrs)
