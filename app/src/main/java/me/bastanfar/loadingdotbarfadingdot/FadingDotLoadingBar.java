@@ -6,6 +6,7 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.os.Build;
@@ -50,47 +51,37 @@ class FadingDotLoadingBar extends View
     float dotThreePos = .5f;
     float dotFourPos = .7f;
 
-    int dotOneColor = 0x00FFFFFF;
-    int dotFourColor = 0xFFFFFFFF;
+    int semiTransparentWhite = 0x40FFFFFF;
+    int transparentWhite = 0x00FFFFFF;
+    int white = 0xFFFFFFFF;
 
     @Override
     protected void onDraw(Canvas canvas)
     {
         super.onDraw(canvas);
-        RectF rect = new RectF(0, 0, getMeasuredWidth(), getMeasuredHeight());
+
+        canvas.drawRoundRect(getRectF(), getMeasuredWidth(), getMeasuredWidth(), getPaint(semiTransparentWhite));
+
+        canvas.drawCircle(getMeasuredWidth() * dotOnePos, getMeasuredHeight() / 2, 10f, getPaint(transparentWhite));
+        canvas.drawCircle(getMeasuredWidth() * dotTwoPos, getMeasuredHeight() / 2, 10f, getPaint(Color.WHITE));
+        canvas.drawCircle(getMeasuredWidth() * dotThreePos, getMeasuredHeight() / 2, 10f, getPaint(Color.WHITE));
+        canvas.drawCircle(getMeasuredWidth() * dotFourPos, getMeasuredHeight() / 2, 10f, getPaint(white));
+
+
+    }
+
+    private RectF getRectF()
+    {
+        return new RectF(0, 0, getMeasuredWidth(), getMeasuredHeight());
+    }
+
+    private Paint getPaint(int color)
+    {
         Paint paint = new Paint();
-        paint.setColor(0x40FFFFFF);
-
+        paint.setColor(color);
         paint.setStyle(Paint.Style.FILL);
-        paint.setStrokeWidth(5);
         paint.setAntiAlias(true);
-        paint.setStrokeCap(Paint.Cap.ROUND);
-
-        Paint paint2 = new Paint();
-        paint2.setColor(0xFFFFFFFF);
-        paint2.setStyle(Paint.Style.FILL);
-        paint2.setAntiAlias(true);
-
-
-        Paint paintD1C = new Paint();
-        paintD1C.setColor(dotOneColor);
-        paintD1C.setStyle(Paint.Style.FILL);
-        paintD1C.setAntiAlias(true);
-
-        Paint paintD4C = new Paint();
-        paintD4C.setColor(dotFourColor);
-        paintD4C.setStyle(Paint.Style.FILL);
-        paintD4C.setAntiAlias(true);
-
-
-        canvas.drawRoundRect(rect, getMeasuredWidth(), getMeasuredWidth(), paint);
-
-        canvas.drawCircle(getMeasuredWidth() * dotOnePos, getMeasuredHeight() / 2, 10f, paintD1C);
-        canvas.drawCircle(getMeasuredWidth() * dotTwoPos, getMeasuredHeight() / 2, 10f, paint2);
-        canvas.drawCircle(getMeasuredWidth() * dotThreePos, getMeasuredHeight() / 2, 10f, paint2);
-        canvas.drawCircle(getMeasuredWidth() * dotFourPos, getMeasuredHeight() / 2, 10f, paintD4C);
-
-
+        return paint;
     }
 
     private void init()
@@ -118,8 +109,8 @@ class FadingDotLoadingBar extends View
                 dotThreePos = (float) animation.getAnimatedValue("D3");
                 dotFourPos = (float) animation.getAnimatedValue("D4");
 
-                dotOneColor = (int) animation.getAnimatedValue("D1C");
-                dotFourColor = (int) animation.getAnimatedValue("D4C");
+                transparentWhite = (int) animation.getAnimatedValue("D1C");
+                white = (int) animation.getAnimatedValue("D4C");
                 invalidate();
             }
         });
