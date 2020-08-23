@@ -16,7 +16,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
-class FadingDotLoadingBar extends View
+class FadingDotLoadingBar extends View implements ValueAnimator.AnimatorUpdateListener
 {
     public FadingDotLoadingBar(Context context)
     {
@@ -46,14 +46,31 @@ class FadingDotLoadingBar extends View
         init();
     }
 
-    float dotOnePos = .1f;
-    float dotTwoPos = .3f;
-    float dotThreePos = .5f;
-    float dotFourPos = .7f;
 
-    int semiTransparentWhite = 0x40FFFFFF;
-    int transparentWhite = 0x00FFFFFF;
-    int white = 0xFFFFFFFF;
+    // Pos = Position
+    // X = Horizontal axis
+    private float dotOneXPos = getMeasuredWidth() * .1f;
+    private float dotTwoXPos = getMeasuredWidth() * .3f;
+    private float dotThreeXPos = getMeasuredWidth() * .5f;
+    private float dotFourXPos = getMeasuredWidth() * .7f;
+
+    // Y = Vertical axis
+    private final int dotYPos = getMeasuredHeight() / 2;
+
+    private int semiTransparentWhite = 0x40FFFFFF;
+    private int transparentWhite = 0x00FFFFFF;
+    private int white = 0xFFFFFFFF;
+
+
+    // POS = Position
+    // PR NAME = Property Name
+    private static final String DOT_ONE_X_POS_PR_NAME = "DotOne";
+    private static final String DOT_TWO_X_POS_PR_NAME = "DotTwo";
+    private static final String DOT_THREE_X_POS_PR_NAME = "DotThree";
+    private static final String DOT_FOUR_X_POS_PR_NAME = "DotFour";
+
+    private static final String DOT_ONE_COLOR_PR_NAME = "DotOneColor";
+    private static final String DOT_FOUR_COLOR_PR_NAME = "DotFourColor";
 
     @Override
     protected void onDraw(Canvas canvas)
@@ -62,10 +79,10 @@ class FadingDotLoadingBar extends View
 
         canvas.drawRoundRect(getRectF(), getMeasuredWidth(), getMeasuredWidth(), getPaint(semiTransparentWhite));
 
-        canvas.drawCircle(getMeasuredWidth() * dotOnePos, getMeasuredHeight() / 2, 10f, getPaint(transparentWhite));
-        canvas.drawCircle(getMeasuredWidth() * dotTwoPos, getMeasuredHeight() / 2, 10f, getPaint(Color.WHITE));
-        canvas.drawCircle(getMeasuredWidth() * dotThreePos, getMeasuredHeight() / 2, 10f, getPaint(Color.WHITE));
-        canvas.drawCircle(getMeasuredWidth() * dotFourPos, getMeasuredHeight() / 2, 10f, getPaint(white));
+        canvas.drawCircle(dotOneXPos, dotYPos, 10f, getPaint(transparentWhite));
+        canvas.drawCircle(dotTwoXPos, dotYPos, 10f, getPaint(Color.WHITE));
+        canvas.drawCircle(dotThreeXPos, dotYPos, 10f, getPaint(Color.WHITE));
+        canvas.drawCircle(dotFourXPos, dotYPos, 10f, getPaint(white));
 
 
     }
@@ -86,34 +103,21 @@ class FadingDotLoadingBar extends View
 
     private void init()
     {
-        PropertyValuesHolder dOne = PropertyValuesHolder.ofFloat("D1", .1f, .3f);
-        PropertyValuesHolder dTwo = PropertyValuesHolder.ofFloat("D2", .3f, .5f);
-        PropertyValuesHolder dThree = PropertyValuesHolder.ofFloat("D3", .5f, .7f);
-        PropertyValuesHolder dFour = PropertyValuesHolder.ofFloat("D4", .7f, .9f);
-        PropertyValuesHolder dOneColor = PropertyValuesHolder.ofObject("D1C", new ArgbEvaluator(), 0x00FFFFFF, 0xFFFFFFFF);
-        PropertyValuesHolder dFourColor = PropertyValuesHolder.ofObject("D4C", new ArgbEvaluator(), 0xFFFFFFFF, 0x00FFFFFF);
+        PropertyValuesHolder dotOneValueHolder = PropertyValuesHolder.ofFloat(DOT_ONE_X_POS_PR_NAME, dotOneXPos, dotOneXPos + .2f);
+        PropertyValuesHolder dotTwoValueHolder = PropertyValuesHolder.ofFloat(DOT_TWO_X_POS_PR_NAME, dotTwoXPos, dotTwoXPos + .2f);
+        PropertyValuesHolder dotThreeValueHolder = PropertyValuesHolder.ofFloat(DOT_THREE_X_POS_PR_NAME, dotThreeXPos, dotThreeXPos + .2f);
+        PropertyValuesHolder dotFourPosValueHolder = PropertyValuesHolder.ofFloat(DOT_FOUR_X_POS_PR_NAME, dotFourXPos, dotFourXPos + .2f);
+
+        PropertyValuesHolder dOneColor = PropertyValuesHolder.ofObject(DOT_ONE_COLOR_PR_NAME, new ArgbEvaluator(), transparentWhite, white);
+        PropertyValuesHolder dFourColor = PropertyValuesHolder.ofObject(DOT_FOUR_COLOR_PR_NAME, new ArgbEvaluator(), white, transparentWhite);
 
 
         ValueAnimator animator = new ValueAnimator();
-        animator.setValues(dOne, dTwo, dThree, dFour, dOneColor, dFourColor);
+        animator.setValues(dotOneValueHolder, dotTwoValueHolder, dotThreeValueHolder, dotFourPosValueHolder, dOneColor, dFourColor);
         animator.setDuration(800);
         animator.setRepeatMode(ValueAnimator.RESTART);
         animator.setRepeatCount(ValueAnimator.INFINITE);
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
-        {
-            @Override
-            public void onAnimationUpdate(final ValueAnimator animation)
-            {
-                dotOnePos = (float) animation.getAnimatedValue("D1");
-                dotTwoPos = (float) animation.getAnimatedValue("D2");
-                dotThreePos = (float) animation.getAnimatedValue("D3");
-                dotFourPos = (float) animation.getAnimatedValue("D4");
-
-                transparentWhite = (int) animation.getAnimatedValue("D1C");
-                white = (int) animation.getAnimatedValue("D4C");
-                invalidate();
-            }
-        });
+        animator.addUpdateListener(this);
         animator.start();
     }
 
@@ -122,4 +126,16 @@ class FadingDotLoadingBar extends View
         TypedArray typedArray = context.getTheme().obtainStyledAttributes(attrs, R.styleable.FadingDotLoadingBar, 0, 0);
     }
 
+    @Override
+    public void onAnimationUpdate(ValueAnimator animation)
+    {
+        dotOneXPos = (float) animation.getAnimatedValue(DOT_ONE_X_POS_PR_NAME);
+        dotTwoXPos = (float) animation.getAnimatedValue(DOT_TWO_X_POS_PR_NAME);
+        dotThreeXPos = (float) animation.getAnimatedValue(DOT_THREE_X_POS_PR_NAME);
+        dotFourXPos = (float) animation.getAnimatedValue(DOT_FOUR_X_POS_PR_NAME);
+
+        transparentWhite = (int) animation.getAnimatedValue(DOT_ONE_COLOR_PR_NAME);
+        white = (int) animation.getAnimatedValue(DOT_FOUR_COLOR_PR_NAME);
+        invalidate();
+    }
 }
