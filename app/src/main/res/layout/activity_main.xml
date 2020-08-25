@@ -8,10 +8,14 @@
     tools:context=".MainActivity">
 
     <me.bastanfar.fadingdotloading.FadingDotLoadingBar
-        android:layout_width="265dp"
-        android:layout_height="13dp"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        app:animDuration="800"
+        app:backgroundBoxBorderRadius="50"
+        app:backgroundBoxColor="#ffff00"
+        app:backgroundBoxVisibility="true"
+        app:dotColor="#000000"
         app:dotSize="10"
-        app:animDuration="350"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

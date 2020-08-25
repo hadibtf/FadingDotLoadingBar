@@ -18,12 +18,25 @@ import androidx.annotation.RequiresApi;
 
 public class FadingDotLoadingBar extends View implements ValueAnimator.AnimatorUpdateListener
 {
-
     private ValueAnimator animator;
-    private int animDuration;
-
     private int dotSize;
+
+    // Initial color for all dots
+    // They are set separately because their values will be animated by the ValueAnimator
+    private int dotOneColor;
+    private int dotTwoBColor;
+    private int dotThreeColor;
+    private int dotFourColor;
+
+    // The main colors that dotOneColor and dotFourColor will be animated to so we set the separately
+    // because their value must be static
     private int dotColor;
+    private int transparentDotColor;
+
+    private int animDuration;
+    private boolean backgroundBoxVisibility;
+    private int backgroundBoxBorderRadius;
+    private int backgroundBoxColor;
 
     private int width;
     private int height;
@@ -37,7 +50,7 @@ public class FadingDotLoadingBar extends View implements ValueAnimator.AnimatorU
     private float dotThreeXPos = .5f;
     private float dotFourXPos = .7f;
 
-    // This is the X position for post animated dot. (Again position multiplication)
+    // Amount of distance that dots will be animated to on X axis. (Again position multiplication)
     private float animationDistance = .2f;
 
     // Y = Vertical axis
@@ -94,12 +107,16 @@ public class FadingDotLoadingBar extends View implements ValueAnimator.AnimatorU
         height = getMeasuredHeight();
         dotYPos = height / 2;
 
-        canvas.drawRoundRect(getRectF(), width, width, getPaint(semiTransparentWhite));
 
-        canvas.drawCircle(width * dotOneXPos, dotYPos, dotSize, getPaint(transparentWhite));
-        canvas.drawCircle(width * dotTwoXPos, dotYPos, dotSize, getPaint(Color.WHITE));
-        canvas.drawCircle(width * dotThreeXPos, dotYPos, dotSize, getPaint(Color.WHITE));
-        canvas.drawCircle(width * dotFourXPos, dotYPos, dotSize, getPaint(white));
+        if (backgroundBoxVisibility)
+        {
+            canvas.drawRoundRect(getRectF(), backgroundBoxBorderRadius, backgroundBoxBorderRadius, getPaint(backgroundBoxColor));
+        }
+
+        canvas.drawCircle(width * dotOneXPos, dotYPos, dotSize, getPaint(dotOneColor));
+        canvas.drawCircle(width * dotTwoXPos, dotYPos, dotSize, getPaint(dotTwoBColor));
+        canvas.drawCircle(width * dotThreeXPos, dotYPos, dotSize, getPaint(dotThreeColor));
+        canvas.drawCircle(width * dotFourXPos, dotYPos, dotSize, getPaint(dotFourColor));
     }
 
     @Override
@@ -110,8 +127,8 @@ public class FadingDotLoadingBar extends View implements ValueAnimator.AnimatorU
         dotThreeXPos = (float) animation.getAnimatedValue(DOT_THREE_X_POS_PR_NAME);
         dotFourXPos = (float) animation.getAnimatedValue(DOT_FOUR_X_POS_PR_NAME);
 
-        transparentWhite = (int) animation.getAnimatedValue(DOT_ONE_COLOR_PR_NAME);
-        white = (int) animation.getAnimatedValue(DOT_FOUR_COLOR_PR_NAME);
+        dotOneColor = (int) animation.getAnimatedValue(DOT_ONE_COLOR_PR_NAME);
+        dotFourColor = (int) animation.getAnimatedValue(DOT_FOUR_COLOR_PR_NAME);
 
         invalidate();
     }
@@ -123,8 +140,8 @@ public class FadingDotLoadingBar extends View implements ValueAnimator.AnimatorU
         PropertyValuesHolder dotThreeValueHolder = PropertyValuesHolder.ofFloat(DOT_THREE_X_POS_PR_NAME, dotThreeXPos, dotThreeXPos + animationDistance);
         PropertyValuesHolder dotFourPosValueHolder = PropertyValuesHolder.ofFloat(DOT_FOUR_X_POS_PR_NAME, dotFourXPos, dotFourXPos + animationDistance);
 
-        PropertyValuesHolder dOneColor = PropertyValuesHolder.ofObject(DOT_ONE_COLOR_PR_NAME, new ArgbEvaluator(), transparentWhite, white);
-        PropertyValuesHolder dFourColor = PropertyValuesHolder.ofObject(DOT_FOUR_COLOR_PR_NAME, new ArgbEvaluator(), white, transparentWhite);
+        PropertyValuesHolder dOneColor = PropertyValuesHolder.ofObject(DOT_ONE_COLOR_PR_NAME, new ArgbEvaluator(), transparentDotColor, dotColor);
+        PropertyValuesHolder dFourColor = PropertyValuesHolder.ofObject(DOT_FOUR_COLOR_PR_NAME, new ArgbEvaluator(), dotColor, transparentDotColor);
 
         animator = new ValueAnimator();
         animator.setValues(dotOneValueHolder, dotTwoValueHolder, dotThreeValueHolder, dotFourPosValueHolder, dOneColor, dFourColor);
@@ -139,8 +156,17 @@ public class FadingDotLoadingBar extends View implements ValueAnimator.AnimatorU
     {
         TypedArray typedArray = context.getTheme().obtainStyledAttributes(attrs, R.styleable.FadingDotLoadingBar, 0, 0);
         dotSize = typedArray.getInt(R.styleable.FadingDotLoadingBar_dotSize, 10);
-        dotColor = typedArray.getColor(R.styleable.FadingDotLoadingBar_dotColor, Color.WHITE);
+        dotColor = dotTwoBColor = dotThreeColor = dotFourColor = typedArray.getColor(R.styleable.FadingDotLoadingBar_dotColor, Color.WHITE);
+        transparentDotColor = dotOneColor = convertToTransparent(dotColor);
         animDuration = typedArray.getColor(R.styleable.FadingDotLoadingBar_animDuration, 800);
+        backgroundBoxColor = typedArray.getColor(R.styleable.FadingDotLoadingBar_backgroundBoxColor, semiTransparentWhite);
+        backgroundBoxVisibility = typedArray.getBoolean(R.styleable.FadingDotLoadingBar_backgroundBoxVisibility, true);
+        backgroundBoxBorderRadius = typedArray.getColor(R.styleable.FadingDotLoadingBar_backgroundBoxBorderRadius, width);
+    }
+
+    private int convertToTransparent(int dotColor)
+    {
+        return Color.parseColor("#00" + String.format("#%06x", dotColor).substring(3));
     }
 
     private RectF getRectF()
