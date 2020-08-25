@@ -1,4 +1,4 @@
-package me.bastanfar.loadingdotbarfadingdot;
+package me.bastanfar.fadingdotloading;
 
 import android.animation.ArgbEvaluator;
 import android.animation.PropertyValuesHolder;
@@ -16,7 +16,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
-class FadingDotLoadingBar extends View implements ValueAnimator.AnimatorUpdateListener
+public class FadingDotLoadingBar extends View implements ValueAnimator.AnimatorUpdateListener
 {
 
     private ValueAnimator animator;

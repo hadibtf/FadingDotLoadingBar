@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="FadingDotLoadingBar">
+        <attr name="dotSize" format="integer"/>
+        <attr name="animDuration" format="integer"/>
+        <attr name="dotColor" format="color"/>
+    </declare-styleable>
+</resources>

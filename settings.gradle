@@ -1,2 +1,3 @@
+include ':FadingDotLoading'
 include ':app'
 rootProject.name = "Loading Dot Bar(FadingDot)"
