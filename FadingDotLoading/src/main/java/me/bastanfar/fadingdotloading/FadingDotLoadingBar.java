@@ -140,7 +140,7 @@ public class FadingDotLoadingBar extends View implements ValueAnimator.AnimatorU
         TypedArray typedArray = context.getTheme().obtainStyledAttributes(attrs, R.styleable.FadingDotLoadingBar, 0, 0);
         dotSize = typedArray.getInt(R.styleable.FadingDotLoadingBar_dotSize, 10);
         dotColor = typedArray.getColor(R.styleable.FadingDotLoadingBar_dotColor, Color.WHITE);
-        animDuration = typedArray.getColor(R.styleable.FadingDotLoadingBar_animDuration, Color.WHITE);
+        animDuration = typedArray.getColor(R.styleable.FadingDotLoadingBar_animDuration, 800);
     }
 
     private RectF getRectF()
