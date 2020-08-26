@@ -133,6 +133,43 @@ public class FadingDotLoadingBar extends View implements ValueAnimator.AnimatorU
         invalidate();
     }
 
+    public void setDotColor(int dotColor)
+    {
+        this.dotColor = dotTwoBColor = dotThreeColor = dotFourColor = dotColor;
+        transparentDotColor = dotOneColor = convertToTransparent(dotColor);
+        postInvalidate();
+    }
+
+    public void setDotSize(int dotSize)
+    {
+        this.dotSize = dotSize;
+        postInvalidate();
+    }
+
+    public void setAnimDuration(int animDuration)
+    {
+        this.animDuration = animDuration;
+        postInvalidate();
+    }
+
+    public void setBackgroundBoxVisibility(boolean backgroundBoxVisibility)
+    {
+        this.backgroundBoxVisibility = backgroundBoxVisibility;
+        postInvalidate();
+    }
+
+    public void setBackgroundBoxColor(int backgroundBoxColor)
+    {
+        this.backgroundBoxColor = backgroundBoxColor;
+        postInvalidate();
+    }
+
+    public void setBackgroundBoxBorderRadius(int backgroundBoxBorderRadius)
+    {
+        this.backgroundBoxBorderRadius = backgroundBoxBorderRadius;
+        postInvalidate();
+    }
+
     private void init()
     {
         PropertyValuesHolder dotOneValueHolder = PropertyValuesHolder.ofFloat(DOT_ONE_X_POS_PR_NAME, dotOneXPos, dotOneXPos + animationDistance);
