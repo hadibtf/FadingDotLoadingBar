@@ -9,16 +9,15 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 
 public class FadingDotLoadingBar extends View implements ValueAnimator.AnimatorUpdateListener
 {
     private ValueAnimator animator;
+    private boolean startAnim;
     private int dotSize;
 
     // Initial color for all dots
@@ -68,32 +67,29 @@ public class FadingDotLoadingBar extends View implements ValueAnimator.AnimatorU
     private static final String DOT_ONE_COLOR_PR_NAME = "DotOneColor";
     private static final String DOT_FOUR_COLOR_PR_NAME = "DotFourColor";
 
-    public FadingDotLoadingBar(Context context)
-    {
-        super(context);
-        init();
-    }
 
     public FadingDotLoadingBar(Context context, @Nullable AttributeSet attrs)
     {
         super(context, attrs);
-        setAttrs(context, attrs);
-        init();
-    }
-
-    public FadingDotLoadingBar(Context context, @Nullable AttributeSet attrs, int defStyleAttr)
-    {
-        super(context, attrs, defStyleAttr);
-        setAttrs(context, attrs);
-        init();
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public FadingDotLoadingBar(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes)
-    {
-        super(context, attrs, defStyleAttr, defStyleRes);
-        setAttrs(context, attrs);
-        init();
+        TypedArray typedArray = context.getTheme().obtainStyledAttributes(attrs, R.styleable.FadingDotLoadingBar, 0, 0);
+        try
+        {
+            dotSize = typedArray.getInt(R.styleable.FadingDotLoadingBar_dotSize, 10);
+            dotColor = dotTwoBColor = dotThreeColor = dotFourColor = typedArray.getColor(R.styleable.FadingDotLoadingBar_dotColor, Color.WHITE);
+            transparentDotColor = dotOneColor = convertToTransparent(dotColor);
+            animDuration = typedArray.getInteger(R.styleable.FadingDotLoadingBar_animDuration, 800);
+            backgroundBoxColor = typedArray.getColor(R.styleable.FadingDotLoadingBar_backgroundBoxColor, semiTransparentWhite);
+            backgroundBoxVisibility = typedArray.getBoolean(R.styleable.FadingDotLoadingBar_backgroundBoxVisibility, true);
+            backgroundBoxBorderRadius = typedArray.getInteger(R.styleable.FadingDotLoadingBar_backgroundBoxBorderRadius, 100);
+            startAnim = typedArray.getBoolean(R.styleable.FadingDotLoadingBar_startAnim, false);
+        } finally
+        {
+            typedArray.recycle();
+        }
+        if (startAnim)
+        {
+            startAnimation();
+        }
     }
 
     @Override
@@ -135,7 +131,7 @@ public class FadingDotLoadingBar extends View implements ValueAnimator.AnimatorU
     {
         dotColor = dotTwoBColor = dotThreeColor = dotFourColor = color;
         transparentDotColor = dotOneColor = convertToTransparent(color);
-        postInvalidate();
+
     }
 
     public void setDotSize(int dotSize)
@@ -168,7 +164,7 @@ public class FadingDotLoadingBar extends View implements ValueAnimator.AnimatorU
         postInvalidate();
     }
 
-    private void init()
+    public void startAnimation()
     {
         PropertyValuesHolder dotOneValueHolder = PropertyValuesHolder.ofFloat(DOT_ONE_X_POS_PR_NAME, dotOneXPos, dotOneXPos + animationDistance);
         PropertyValuesHolder dotTwoValueHolder = PropertyValuesHolder.ofFloat(DOT_TWO_X_POS_PR_NAME, dotTwoXPos, dotTwoXPos + animationDistance);
@@ -187,21 +183,15 @@ public class FadingDotLoadingBar extends View implements ValueAnimator.AnimatorU
         animator.start();
     }
 
-    private void setAttrs(Context context, @Nullable AttributeSet attrs)
-    {
-        TypedArray typedArray = context.getTheme().obtainStyledAttributes(attrs, R.styleable.FadingDotLoadingBar, 0, 0);
-        dotSize = typedArray.getInt(R.styleable.FadingDotLoadingBar_dotSize, 10);
-        dotColor = dotTwoBColor = dotThreeColor = dotFourColor = typedArray.getColor(R.styleable.FadingDotLoadingBar_dotColor, Color.WHITE);
-        transparentDotColor = dotOneColor = convertToTransparent(dotColor);
-        animDuration = typedArray.getColor(R.styleable.FadingDotLoadingBar_animDuration, 800);
-        backgroundBoxColor = typedArray.getColor(R.styleable.FadingDotLoadingBar_backgroundBoxColor, semiTransparentWhite);
-        backgroundBoxVisibility = typedArray.getBoolean(R.styleable.FadingDotLoadingBar_backgroundBoxVisibility, true);
-        backgroundBoxBorderRadius = typedArray.getColor(R.styleable.FadingDotLoadingBar_backgroundBoxBorderRadius, width);
-    }
-
     private int convertToTransparent(int dotColor)
     {
-        return Color.parseColor("#00" + String.format("#%06x", dotColor).substring(3));
+        // This converts integer color code into this #ff00ffff
+        String colorString = String.format("#%06x", dotColor);
+        // This line removes #ff which is the opacity of the give color
+        colorString = colorString.substring(3);
+        // This line adds the given string to make colors opacity 0
+        colorString = "#00" + colorString;
+        return Color.parseColor(colorString);
     }
 
     private RectF getRectF()

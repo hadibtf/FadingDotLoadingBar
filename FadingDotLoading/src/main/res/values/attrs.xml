@@ -4,6 +4,7 @@
         <attr name="dotSize" format="integer" />
         <attr name="dotColor" format="color" />
         <attr name="animDuration" format="integer" />
+        <attr name="startAnim" format="boolean" />
         <attr name="backgroundBoxVisibility" format="boolean" />
         <attr name="backgroundBoxBorderRadius" format="integer" />
         <attr name="backgroundBoxColor" format="color" />
