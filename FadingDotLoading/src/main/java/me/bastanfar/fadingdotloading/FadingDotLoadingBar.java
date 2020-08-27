@@ -57,8 +57,6 @@ public class FadingDotLoadingBar extends View implements ValueAnimator.AnimatorU
     private int dotYPos;
 
     private int semiTransparentWhite = 0x40FFFFFF;
-    private int transparentWhite = 0x00FFFFFF;
-    private int white = 0xFFFFFFFF;
 
     // POS = Position
     // PR NAME = Property Name
@@ -133,10 +131,10 @@ public class FadingDotLoadingBar extends View implements ValueAnimator.AnimatorU
         invalidate();
     }
 
-    public void setDotColor(int dotColor)
+    public void setDotColor(int color)
     {
-        this.dotColor = dotTwoBColor = dotThreeColor = dotFourColor = dotColor;
-        transparentDotColor = dotOneColor = convertToTransparent(dotColor);
+        dotColor = dotTwoBColor = dotThreeColor = dotFourColor = color;
+        transparentDotColor = dotOneColor = convertToTransparent(color);
         postInvalidate();
     }
 
