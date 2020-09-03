@@ -41,9 +41,9 @@ fadingDotLoadingBar.startAnimation();
 <me.bastanfar.fadingdotloading.FadingDotLoadingBar
         app:animDuration="500"
         app:backgroundBoxBorderRadius="70"
-        app:backgroundBoxColor="#AFB42B"
+        app:backgroundBoxColor="#001998"
         app:backgroundBoxVisibility="true"
-        app:dotColor="#7B1FA2"
-        app:dotSize="17"
+        app:dotColor="#FF1376"
+        app:dotSize="23"
         app:startAnim="true"/>
 ```
