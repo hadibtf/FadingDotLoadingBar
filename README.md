@@ -38,11 +38,12 @@ fadingDotLoadingBar.startAnimation();
 
 ```xml
 //XML
-app:animDuration="500"
-app:backgroundBoxBorderRadius="70"
-app:backgroundBoxColor="#AFB42B"
-app:backgroundBoxVisibility="true"
-app:dotColor="#7B1FA2"
-app:dotSize="17"
-app:startAnim="true"
+<me.bastanfar.fadingdotloading.FadingDotLoadingBar
+        app:animDuration="500"
+        app:backgroundBoxBorderRadius="70"
+        app:backgroundBoxColor="#AFB42B"
+        app:backgroundBoxVisibility="true"
+        app:dotColor="#7B1FA2"
+        app:dotSize="17"
+        app:startAnim="true"/>
 ```
