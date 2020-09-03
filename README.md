@@ -1,5 +1,6 @@
 # FadingDotLoadingBar
 [![](https://jitpack.io/v/hadibtf/FadingDotLoadingBar.svg)](https://jitpack.io/#hadibtf/FadingDotLoadingBar)
+
 A loading bar with cool move and fade animation.
 
 ![demo.gif](https://raw.githubusercontent.com/hadibtf/FadingDotLoadingBar/master/demo.gif "Demo Gif") 
